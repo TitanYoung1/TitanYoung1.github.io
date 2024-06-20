@@ -6,10 +6,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>散人软件基地2.0</title>
+  <style>
+    body {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100vh;
+        background: linear-gradient(to right, #f64f59, #c471ed, #12c2e9);
+    }
+
+    .particle {
+        width: 4px;
+        height: 4px;
+        left: 0;
+        top: 0;
+        border-radius: 50%;
+        position: absolute;
+        background: red;
+    }
+    .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 999;
+
+    }
+    table{
+      /* border: 1px solid #86b300; */
+      border: 0;
+    }
+  </style>
 </head>
-
+ 
 <body>
-
+<!-- 1.引入动态粒子库 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.2/particles.min.js"></script>
   <table border="1" width='100%' height='100%'>
     <!-- 在table中使用tr表示表格中的一行，有几个tr就有几行 -->
     <!-- 第一行 -->
@@ -45,6 +77,7 @@
 
 
   </table>
+  <canvas class="background"></canvas>
   <script>
 
     function Array1(n, chars) {
@@ -66,11 +99,154 @@
       node.textContent = '' + co1T[i] + '';
       containerT.appendChild(node);
     }
-   
- 
-    
+    //log1 以下方案废弃，动态生成每个单元格和文字并为每个单元格设置不同的链接，一开始思路就错了，事半功倍没必要
+    //单元格应该是静态的固定死的，按需要手动增减即可
+    // const co1 = Array1(19, ['gopeed', 'b', 'c','d','e','f','g','','','','','','','','','','','','',]);
+    // const co12 = Array1(19, ['d', 'e', 'f']);
+    // const co13 = Array1(19, ['g', 'h', 'k']);
+    // const co14 = Array1(19, ['l', 'm', 'n']);
+
+
+    // let container = document.getElementById('container1');
+    // for (let i = 0; i < 18; i++) {
+    //   let node = document.createElement('th');
+    //   node.textContent = '' + co1[i] + '';
+    //   container.appendChild(node);
+    // }
+
+    // let container2 = document.getElementById('container2');
+    // for (let i = 0; i < 18; i++) {
+    //   let node = document.createElement('th');
+    //   node.textContent = '' + co12[i] + '';
+    //   container2.appendChild(node);
+    // }
+    // let container3 = document.getElementById('container3');
+    // for (let i = 0; i < 18; i++) {
+    //   let node = document.createElement('th');
+    //   node.textContent = '' + co13[i] + '';
+    //   container3.appendChild(node);
+    // }
+    // let container4 = document.getElementById('container4');
+    // for (let i = 0; i < 18; i++) {
+    //   let node = document.createElement('th');
+    //   node.textContent = '' + co14[i] + '';
+    //   container4.appendChild(node);
+    // }
+
+//2.背景粒子
+     window.onload = function () {
+            Particles.init({
+                // 选择canvas画布元素
+                selector: '.background',
+                // 设置最大粒子数
+                maxParticles: 110,
+                // 设置粒子的移动速度
+                speed: 1,
+                // 设置粒子颜色
+                color: '#00FFFF',
+                // 开启点连线
+                connectParticles: false,
+                // 设置
+                minDistance: 140,
+                // 设置响应式配置项的调整
+                responsive: [
+                    {
+                        // 当浏览器窗口宽小于768像素大小采用以下配置
+                        breakpoint: 768,
+                        options: {
+                            maxParticles: 200,
+                            color: '#9400D3',
+                            connectParticles: false
+                        }
+                    }, {
+                        // 当浏览器窗口宽小于425像素大小采用以下配置
+                        breakpoint: 425,
+                        options: {
+                            maxParticles: 100,
+                            connectParticles: true
+                        }
+                    }, {
+                        // 当浏览器窗口宽小于320像素大小采用以下配置
+                        breakpoint: 320,
+                        options: {
+                            maxParticles: 0
+                        }
+                    }
+                ]
+
+            })
+        }
+    // 3.鼠标粒子
+ // 定义粒子最大生命周期
+    const MAX_PERIOD = 100
+
+// 获取随机颜色函数，返回值 ： 0-255,0-255,0-255
+function getRandColor() {
+    return Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256) + ', ' + Math.floor(Math.random() * 256);
+}
+// 鼠标移动事件处理
+window.onmousemove = function (e) {
+    // 生成粒子
+    var particle = document.createElement('div')
+    //设置类名，使用 css，设置默认样式 
+    particle.className = 'particle'
+    // 将粒子的 left top 偏移，设置为鼠标移动的位置
+    particle.style.left = e.clientX + 'px'
+    particle.style.top = e.clientY + 'px'
+    // 获取随机颜色值 xx,xx,xx
+    var tempColor = getRandColor()
+    // 设置为 bgcolor 属性
+    particle.setAttribute('bgcolor', tempColor)
+    // 生成粒子水平和垂直方向的随机移动速度
+    var speedX = Math.random() * 1.5
+    var speedY = Math.random() * 0.75 * 1.5
+    // 生成随机数
+    var randDirectionValue = Math.random()
+    // 随机改变粒子在垂直方向的移动方向，向上 或者 向下
+    speedY = randDirectionValue > 0.5 ? speedY : -speedY
+    // 为该粒子设置X，Y轴移动速度，和生命周期
+    particle.setAttribute('speedX', speedX)
+    particle.setAttribute('speedY', speedY)
+    particle.setAttribute('period', 0)
+    // 添加到网页当中
+    document.body.appendChild(particle)
+}
+
+// 运动函数
+function run() {
+    // 获取所有的粒子
+    var particles = document.getElementsByClassName('particle')
+
+    // 开始遍历
+    for (var i = 0; i < particles.length; i++) {
+        // 获取粒子的水平、垂直方向的运动速度
+        var speedX = particles[i].getAttribute('speedX')
+        var speedY = particles[i].getAttribute('speedY')
+        // 获取粒子的颜色值
+        var color = particles[i].getAttribute('bgcolor')
+        // 获取粒子的当前的生命值
+        var period = parseInt(particles[i].getAttribute('period'))
+        // 增加生命值
+        period += 1;
+        // 将当前生命值重新设置给该粒子
+        particles[i].setAttribute('period', period)
+        // 修改粒子的left 和 top 实现移动效果，（先获取粒子当前的偏移量，然后加上移动速度）
+        particles[i].style.left = parseFloat(particles[i].style.left) + parseFloat(speedX) + 'px'
+        particles[i].style.top = parseFloat(particles[i].style.top) + parseFloat(speedY) + 'px'
+        // 让粒子的颜色跟随，生命值而变化：使用 rgba 改变颜色的透明度
+        particles[i].style.backgroundColor = 'rgba(' + color + ',' + (1 - period / 100) + ')';
+
+        // 如果该粒子生命值超过的定义的最大生命周期，则销毁该粒子
+        if (period >= MAX_PERIOD) {
+            document.body.removeChild(particles[i])
+        }
+    }
+}
+    // 使用定时器运行运动函数
+setInterval(run, 10)
     
   </script>
+
 </body>
 
 </html>
